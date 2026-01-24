@@ -1,0 +1,25 @@
+plugins {
+    id 'java-library'
+}
+
+repositories {
+    mavenCentral() // где лежат LWJGL API и natives
+}
+
+def lwjglVersion = "3.3.4"
+
+dependencies {
+    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+
+    // LWJGL API
+    implementation "org.lwjgl:lwjgl"
+    implementation "org.lwjgl:lwjgl-glfw"
+    implementation "org.lwjgl:lwjgl-opengl"
+    implementation "org.lwjgl:lwjgl-stb"
+
+    // natives macOS ARM64 (Apple Silicon)
+    runtimeOnly "org.lwjgl:lwjgl:natives-macos-arm64"
+    runtimeOnly "org.lwjgl:lwjgl-glfw:natives-macos-arm64"
+    runtimeOnly "org.lwjgl:lwjgl-opengl:natives-macos-arm64"
+    runtimeOnly "org.lwjgl:lwjgl-stb:natives-macos-arm64"
+}

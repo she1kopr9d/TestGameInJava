@@ -1,0 +1,41 @@
+plugins {
+    id 'application'
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+def lwjglVersion = '3.3.4'
+def os = org.gradle.internal.os.OperatingSystem.current()
+def natives = os.isMacOsX() ? "natives-macos-arm64" :
+              os.isWindows() ? "natives-windows" :
+              "natives-linux"
+
+dependencies {
+    implementation project(':engine')
+
+    // LWJGL
+    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+
+    // LWJGL API
+    implementation "org.lwjgl:lwjgl"
+    implementation "org.lwjgl:lwjgl-glfw"
+    implementation "org.lwjgl:lwjgl-opengl"
+    implementation "org.lwjgl:lwjgl-stb"
+
+    // Нативы — теперь используем переменную $natives
+    runtimeOnly "org.lwjgl:lwjgl:$lwjglVersion:$natives"
+    runtimeOnly "org.lwjgl:lwjgl-glfw:$lwjglVersion:$natives"
+    runtimeOnly "org.lwjgl:lwjgl-opengl:$lwjglVersion:$natives"
+    runtimeOnly "org.lwjgl:lwjgl-stb:$lwjglVersion:$natives"
+}
+
+application {
+    mainClass = 'org.shelldev.game.Main'
+    applicationDefaultJvmArgs = [
+        '-XstartOnFirstThread',
+        "-Djava.library.path=${configurations.runtimeClasspath.findAll { it.name.contains('natives') }.join(File.pathSeparator)}"
+    ]    
+}
