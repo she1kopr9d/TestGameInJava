@@ -33,7 +33,7 @@ public class CameraSystem extends System<Camera> {
                 Position pos = target.getComponent(Position.class);
                 if (pos != null) {
 
-                    Vector2f targetPos = pos.getPosition();
+                    Vector2f targetPos = pos.getLocalPosition();
                     cameraOffset = cameraOffset.lerp(
                         targetPos,
                         cam.getSmoothness() * TimeSystem.Instance.getDeltaTime()

@@ -25,7 +25,7 @@ public class World {
     }
 
     public ArrayList<Entity> getEntities() {
-        return _entities;
+        return new ArrayList<Entity>(_entities);
     }
 
     private int generateEntityId() {
@@ -33,7 +33,7 @@ public class World {
     }
 
     public ArrayList<Entity> getChilds(){
-        return _worldObject.getChilds();
+        return new ArrayList<Entity>(_worldObject.getChilds());
     }
 
     public Entity getWorldObject(){

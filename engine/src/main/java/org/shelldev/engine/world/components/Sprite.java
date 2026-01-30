@@ -12,32 +12,34 @@ public class Sprite extends Component {
     public static final String DefaultVertexShaderPath = "shaders/vertex02.glsl";
     public static final String DefaultFragmentShaderPath = "shaders/fragment02.glsl";
 
+    public static Vector2f calculateRenderStart(
+            Vector2f worldAnchorPosition,
+            Vector2f spriteSize,
+            Vector2f anchor
+    ) {
+        float drawX = worldAnchorPosition.x() - spriteSize.x() * anchor.x();
+        float drawY = worldAnchorPosition.y() - spriteSize.y() * anchor.y();
+
+        return new Vector2f(drawX, drawY);
+    }
+
     private Color _color;
     private Vector2f _size;
     private Vector2f _scale;     // Множитель размера
-    private Vector2f _anchor;
     private Texture _texture;
     private int _layer = 0;
 
     private Shader _shader;
 
     // Конструктор с обязательными параметрами
-    public Sprite(Color color, Vector2f size, int layer, Vector2f anchor) {
+    public Sprite(Color color, Vector2f size, int layer) {
         _color = color != null ? color : new Color(1f, 1f, 1f, 1f);
         _size = size != null ? size : Vector2f.One;
         _layer = layer;
-        _anchor = anchor != null ? anchor : new Vector2f(0.5f, 0.5f);
         _scale = Vector2f.One; // по умолчанию 1
     }
 
     // Геттеры и сеттеры
-    public Vector2f getAnchor() {
-        return _anchor != null ? _anchor : new Vector2f(0.5f, 0.5f);
-    }
-
-    public void setAnchor(Vector2f anchor) {
-        _anchor = anchor;
-    }
 
     public Color getColor() {
         return _color != null ? _color : new Color(1f, 1f, 1f, 1f);
@@ -49,6 +51,10 @@ public class Sprite extends Component {
 
     public Vector2f getSize() {
         return _size != null ? _size.mul(_scale) : Vector2f.One.mul(_scale);
+    }
+
+    public Vector2f getOriginSize(){
+        return _size;
     }
 
     public void setSize(Vector2f size) {

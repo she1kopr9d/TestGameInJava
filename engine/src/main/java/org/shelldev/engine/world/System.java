@@ -16,5 +16,7 @@ public abstract class System<T extends Component> extends ESystemBase {
     public void create(){}
     public void init(){}
     public void update(){}
+    public void render(){}
+    public void postRender(){}
     public void remove(){}
 }

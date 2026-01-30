@@ -17,6 +17,8 @@ public class Game {
         Engine.Instance.renderLoop(() -> {
             Engine.Instance.pollEvents();
             SystemManager.updateSystems();
+            SystemManager.renderSystems();
+            SystemManager.postRenderSystems();
         });
         SystemManager.removeSystems();
     }

@@ -24,4 +24,8 @@ public class Vector2 {
     public int y(){
         return  _y;
     }
+
+    public Vector2f f(){
+        return new Vector2f(_x, _y);
+    }
 }

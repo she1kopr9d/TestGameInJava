@@ -1,38 +1,43 @@
 #version 150
 
 in vec2 vUV;
+in vec2 fObjectPosition;
+in vec2 fAnchor;
+in vec2 fCameraPosition;
+in vec2 fScreenSize;
+in vec2 fSpriteSize;
+in float fTime;
+in vec4 fColor;
+
 out vec4 fragColor;
 
-uniform vec4 color;
 uniform sampler2D uTexture;
 uniform int hasTexture;
-uniform vec2 offset;
-uniform vec2 size;
-uniform vec2 screenSize;
-uniform float time;
 
 void main() {
+    // Текстура
+    vec4 texColor = vec4(1.0);
+    if(hasTexture == 1){
+        texColor = texture(uTexture, vUV);
+    }
+
+    // --- ВОЛНЫ ---
     vec2 uv = vUV;
 
-    // Жидкое дрожание по волнам
-    float waveX = sin(uv.y * 10.0 + time * 3.0) * 0.03;
-    float waveY = cos(uv.x * 12.0 - time * 2.5) * 0.03;
-    uv += vec2(waveX, waveY);
+    // смещаем координаты по времени для анимации
+    float wave1 = sin((uv.x + fTime * 0.5) * 10.0) * 0.05;
+    float wave2 = cos((uv.y + fTime * 0.7) * 12.0) * 0.03;
+    float wave3 = sin((uv.x + uv.y + fTime) * 8.0) * 0.02;
 
-    // Легкая пульсация альфы
-    float alphaPulse = 0.7 + 0.3 * sin(time * 5.0 + uv.x * 5.0 + uv.y * 5.0);
+    // суммируем волны
+    float wave = wave1 + wave2 + wave3;
 
-    // Немного шума для «живости»
-    float noise = sin((uv.x + uv.y + time * 4.0) * 20.0) * 0.02;
-    uv += vec2(noise);
+    // применяем волны к UV координатам
+    uv.y += wave;
 
-    // Цвет текстуры или белый, если текстуры нет
-    vec4 texColor = hasTexture == 1 ? texture(uTexture, uv) : vec4(1.0);
+    // делаем плавный градиент цвета воды
+    vec3 waterColor = vec3(0.2, 0.4, 0.7) + wave * 0.3;
 
-    // Финальный цвет: текстура * основной цвет * пульс альфы
-    fragColor = texColor * color;
-    fragColor.a *= alphaPulse;
-
-    // Альфа-тест
-    if (fragColor.a < 0.01) discard;
+    // комбинируем с текстурой и uniform цветом
+    fragColor = vec4(waterColor, 1.0) * texColor * fColor;
 }

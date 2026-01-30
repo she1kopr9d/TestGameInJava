@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.shelldev.engine.math.Vector2f;
+import org.shelldev.engine.utils.ComponentRequirements;
 import org.shelldev.engine.world.components.Position;
 
 public class Entity {
@@ -28,15 +29,20 @@ public class Entity {
         component.setEntity(this);
     }
 
-    public <T extends Component> T getComponent(Class<T> class_type) {
-        return class_type.cast(_components.get(class_type));
+    public <T extends Component> T getComponent(Class<T> classType) {
+        for (Component component : _components.values()) {
+            if (classType.isAssignableFrom(component.getClass())) {
+                return classType.cast(component);
+            }
+        }
+        return null;
     }
 
     public void setParent(Entity parent){
         if (_parent != null){
             Position position = getComponent(Position.class);
             if (position != null){
-                Vector2f absPos = Position.getAbsPosition(this);
+                Vector2f absPos = Position.getGlobalPosition(this);
                 position.setPosition(absPos);
             }
             _parent.deleteChild(this);
@@ -49,7 +55,7 @@ public class Entity {
         if (_parent != null){
             Position position = getComponent(Position.class);
             if (position != null){
-                Vector2f absPos = Position.getAbsPosition(this);
+                Vector2f absPos = Position.getGlobalPosition(this);
                 position.setPosition(absPos);
             }
             _parent.deleteChild(this);
@@ -72,5 +78,14 @@ public class Entity {
 
     public ArrayList<Entity> getChilds(){
         return _childs;
+    }
+
+    public Vector2f getWorldPosition() {
+        if (!ComponentRequirements.hasIn(this, 
+            Position.class
+        )){
+            return Vector2f.Zero;
+        }
+        return Position.getGlobalPosition(this);
     }
 }

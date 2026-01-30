@@ -8,8 +8,11 @@ import org.shelldev.engine.graphics.Shader;
 import org.shelldev.engine.graphics.Texture;
 import org.shelldev.engine.math.Vector2;
 import org.shelldev.engine.math.Vector2f;
+import org.shelldev.engine.physics.BoxCollider;
+import org.shelldev.engine.physics.Rigidbody;
 import org.shelldev.engine.utils.Color;
 import org.shelldev.engine.utils.MoveInput;
+import org.shelldev.engine.utils.ObjectFactory;
 import org.shelldev.engine.world.Entity;
 import org.shelldev.engine.world.World;
 import org.shelldev.engine.world.components.AnimationComponent;
@@ -18,6 +21,7 @@ import org.shelldev.engine.world.components.FSMComponent;
 import org.shelldev.engine.world.components.Position;
 import org.shelldev.engine.world.components.Sprite;
 import org.shelldev.game.scripts.player.controller.ControllerComponent;
+import org.shelldev.game.scripts.player.controller.DebugButtonsComponent;
 
 
 public class Main {
@@ -30,12 +34,14 @@ public class Main {
         String fragmentShaderPath
     ){
         Entity e = World.Instance.createEntity();
-        Position p = new Position(position != null ? position : Vector2f.Zero);
+        Position p = new Position(
+            position != null ? position : Vector2f.Zero,
+            anchor != null ? anchor : Vector2f.One.mul(0.5f)
+        );
         Sprite s = new Sprite(
             color != null ? color : new Color(1.0f, 1.0f, 1.0f, 1.0f),
             size != null ? size : new Vector2f(100.0f, 100.0f),
-            layer,
-            anchor != null ? anchor : Vector2f.One.mul(0.5f)
+            layer
         );
         e.addComponent(p);
         e.addComponent(s);
@@ -54,19 +60,42 @@ public class Main {
         GameConfig config = new GameConfig(
             "Game",
             new Vector2(1920, 1080),
-            new Color(0.5f, 0.5f, 1.0f, 1.0f)
+            new Color(0.5f, 0.5f, 1.0f, 1.0f),
+            true
         );
         Game.init(config);
         try {
-            createBlock(
-                null, null, Vector2f.One.mul(128), 1, null, null
-            ).setParent(World.Instance.getWorldObject());
+            {
+                ObjectFactory.entityRigidbody(
+                    1,
+                    false,
+                    true,
+                    "shaders/fragment2.glsl",
+                    null,
+                    null,
+                    Vector2f.One.mul(64),
+                    1,
+                    null,
+                    null
+                ).setParent(World.Instance.getWorldObject());
+            }
+            {
+                ObjectFactory.entityRigidbody(
+                    1,
+                    true,
+                    true,
+                    "shaders/fragment2.glsl",
+                    null,
+                    null,
+                    new Vector2f(1024*3, 32),
+                    1,
+                    new Vector2f(0, -48),
+                    null
+                ).setParent(World.Instance.getWorldObject());
+            }
             Entity entity = World.Instance.createEntity();
-            createBlock(
-                null, null, Vector2f.One.mul(128), 1, null, "shaders/fragment2.glsl"
-            ).setParent(entity);
             entity.setParent(World.Instance.getWorldObject());
-            Position position = new Position(new Vector2f(config.getScreenSize().x()/2, config.getScreenSize().y()/2));
+            Position position = new Position(new Vector2f(0f, 64+32f), null);
             entity.addComponent(position);
             Animation idleAnimation = new Animation(
                 "Idle", new Texture[]{
@@ -125,8 +154,7 @@ public class Main {
             Sprite sprite = new Sprite(
                 new Color(1.0f, 1.0f, 1.0f, 1.0f),
                 new Vector2f(texture.width, texture.height),
-                2,
-                Vector2f.One.multiply(0.5f));
+                2);
             sprite.setScale(Vector2f.One.mul(4));
             entity.addComponent(sprite);
             sprite.setTexture(texture);
@@ -196,6 +224,13 @@ public class Main {
             });
             
             fsm.setInitialState(idle, entity);
+
+            BoxCollider bCollider = new BoxCollider(14*4, 128);
+            entity.addComponent(bCollider);
+            Rigidbody rb = new Rigidbody(128, false);
+            entity.addComponent(rb);
+            rb.setUseGravity(true);
+            entity.addComponent(new DebugButtonsComponent());
 
         } catch (Exception e) { }
         

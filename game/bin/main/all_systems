@@ -1,0 +1,10 @@
+org.shelldev.engine.world.systems.RenderSystem
+org.shelldev.engine.world.systems.SpriteSystem
+org.shelldev.engine.world.systems.InputSystem
+org.shelldev.engine.world.systems.TimeSystem
+org.shelldev.engine.world.systems.AnimationSystem
+org.shelldev.engine.world.systems.FSMSystem
+org.shelldev.engine.world.systems.CameraSystem
+org.shelldev.engine.world.systems.PhysicsSystem
+org.shelldev.engine.world.systems.debug.DebugRenderSystem
+org.shelldev.game.scripts.player.controller.ControllerSystem

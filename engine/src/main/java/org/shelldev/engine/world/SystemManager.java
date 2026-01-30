@@ -45,6 +45,15 @@ public class SystemManager {
         SystemManager.iterableSystems(system -> system.update());
     }
 
+    public static void renderSystems(){
+        SystemManager.iterableSystems(system -> system.render());
+    }
+
+    public static void postRenderSystems(){
+        SystemManager.iterableSystems(system -> system.postRender());
+    }
+
+
     public static void removeSystems(){
         SystemManager.iterableSystems(system -> system.remove());
     }
